@@ -136,6 +136,14 @@ export const GuestTranscriptItem = Schema.Union([
     id: TrimmedNonEmptyString,
     label: Schema.String,
   }),
+  /** A visual the agent published. The page loads it from `GUEST_RENDER_ROUTE` by `id`. */
+  Schema.Struct({
+    kind: Schema.Literal("html-render"),
+    id: TrimmedNonEmptyString,
+    title: Schema.String,
+    height: Schema.Number,
+    heights: Schema.optional(Schema.Array(Schema.Tuple([Schema.Number, Schema.Number]))),
+  }),
 ]);
 export type GuestTranscriptItem = typeof GuestTranscriptItem.Type;
 
@@ -169,4 +177,6 @@ export const GuestStreamEvent = Schema.Union([
 export type GuestStreamEvent = typeof GuestStreamEvent.Type;
 
 export const GUEST_ROUTE_PREFIX = "/api/guest";
+/** Serves one HTML render the guest can see: `?item=<turn item id>`. */
+export const GUEST_RENDER_ROUTE = `${GUEST_ROUTE_PREFIX}/render`;
 export const GUEST_SESSION_COOKIE = "t3_guest";

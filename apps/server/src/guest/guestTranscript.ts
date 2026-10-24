@@ -7,6 +7,7 @@ import type {
   OrchestrationV2TurnItem,
   RunId,
 } from "@t3tools/contracts";
+import { htmlRenderFromToolItem } from "@t3tools/shared/toolOutput";
 
 // Fixed labels only: tool titles and arguments can carry paths, commands, and secrets.
 const TOOL_LABELS: Partial<Record<OrchestrationV2TurnItem["type"], string>> = {
@@ -14,7 +15,6 @@ const TOOL_LABELS: Partial<Record<OrchestrationV2TurnItem["type"], string>> = {
   file_change: "Edited files",
   file_search: "Searched files",
   web_search: "Searched the web",
-  dynamic_tool: "Used a tool",
   subagent: "Ran a subagent",
 };
 
@@ -59,6 +59,20 @@ export function guestTranscriptItem(item: OrchestrationV2TurnItem): GuestTranscr
           options: question.options.map((option) => option.label),
         })),
       };
+    case "dynamic_tool": {
+      // A published visual is shown, sandboxed; other tool calls stay a fixed label.
+      const render = item.status === "completed" ? htmlRenderFromToolItem(item) : undefined;
+      if (render !== undefined) {
+        return {
+          kind: "html-render",
+          id: item.id,
+          title: render.title,
+          height: render.height,
+          ...(render.heights === undefined ? {} : { heights: render.heights }),
+        };
+      }
+      return { kind: "tool", id: item.id, label: "Used a tool" };
+    }
     default: {
       const label = TOOL_LABELS[item.type];
       return label === undefined ? null : { kind: "tool", id: item.id, label };

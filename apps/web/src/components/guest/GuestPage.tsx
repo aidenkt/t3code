@@ -19,6 +19,7 @@ import { useNowMinute } from "~/hooks/useNowMinute";
 import { cn } from "~/lib/utils";
 import ChatMarkdown from "../ChatMarkdown";
 import { GuestMessageName, guestBubbleClassName } from "../chat/guestMessageStyle";
+import { GuestHtmlRender } from "./GuestHtmlRender";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -380,6 +381,8 @@ function TranscriptItem({
       );
     case "tool":
       return <p className="truncate text-xs text-muted-foreground">{item.label}</p>;
+    case "html-render":
+      return <GuestHtmlRender item={item} />;
   }
 }
 
